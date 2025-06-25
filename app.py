@@ -19,6 +19,7 @@ def home():
         'index.html', users=users
     ) 
 
+#Registro
 @app.route("/register", methods=["POST", "GET"])
 def register():
     if request.method == "POST":
@@ -39,6 +40,7 @@ def register():
     
     return render_template('register.html')
 
+#Deletar
 @app.route('/delete/<int:id>', methods=['POST'])
 def delete_user(id):
     try:
@@ -46,22 +48,24 @@ def delete_user(id):
         if user:
             db.session.delete(user)
             db.session.commit()
-            return redirect(url_for('index'))
+            return redirect(url_for('home'))
         else:
             return render_template('index.html', users=User.query.all(), erro='Usuário não encontrado.')
     except Exception as e:
         print(f"Erro ao deletar usuário: {e}")
         return render_template('index.html', users=User.query.all(), erro='Erro ao deletar usuário.')
 
-    
-@app.route("/update/<int:id>", methods=["POST, GET"])
-def edit_user():
+
+#update de user   
+@app.route("/update/<int:id>", methods=["POST" ,"GET"])
+def edit_user(id):
     try:
         user = User.query.get_or_404(id)
         if request.method == "POST":
             user.nome = request.form['nome']
             user.email = request.form['email']
-            return redirect(url_for('index'))
+            db.session.commit()
+            return redirect(url_for('home'))
         return render_template('edit_user.html', user=user)
 
     except Exception as e:
